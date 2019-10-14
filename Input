@@ -1,0 +1,35 @@
+#include "stdafx.h"
+#include "Input.h"
+#include <string.h>
+#include "Show.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+void input_key(char* string)
+{
+	char input[100];
+	strcpy(input,string);//保存字符串
+	show_output(input);//传入数据处理函数
+}
+/*文本输入函数
+参数：输入界面获取的字符串
+功能：储存汉字，并调用数据处理函数处理汉字
+返回：无*/
+void input_data(char *string)
+{
+	char input[100],outtext[100];
+	FILE *fp;
+	//strcpy(input,string);
+	//fp=fopen(string,"rt");
+	if((fp=fopen( string ,"rt"))==NULL)
+	{
+		show_file();
+	}
+	fscanf( fp,"%s" ,outtext); 
+	show_output(outtext);
+	fclose(fp);
+}
+/*文件输入函数
+参数：输入界面获取的文件路径
+功能：扫描文件中的数据并储存，并调用数据处理函数处理汉字
+返回：无*/
