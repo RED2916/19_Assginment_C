@@ -1,0 +1,255 @@
+#include "stdafx.h"
+#include "Choose.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <conio.h>
+#include <string.h>
+#include <graphics.h>
+#include "Show.h"
+#include "Input.h"
+#include "Deal.h"
+#include <Windows.h>
+
+#define WIDTH 1000
+#define HEIGHT 700
+
+MOUSEMSG move;//获取鼠标信息;
+/*extern struct Block;*/
+
+void Face() 
+{
+	int judge;
+	int key=0;
+	initgraph(WIDTH,HEIGHT);//长宽
+	setbkcolor(RGB(251,248,241));//背景
+	settextcolor(RGB(150,126,104));
+	cleardevice();//清屏
+
+	settextstyle(70,0, _T("方正行黑简体"));//字体设置
+	RECT r1={0,0,WIDTH,HEIGHT/3};
+	drawtext(_T("欢迎使用霓虹汉字！"),&r1,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	settextstyle(30,0,_T("微软雅黑"));
+	RECT r2={WIDTH/2-45,HEIGHT/3,WIDTH/2+45,HEIGHT/3+30};
+	drawtext(_T("文本输入"),&r2,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	RECT r3={WIDTH/2-45,HEIGHT/3+30,WIDTH/2+45,HEIGHT/3+60};
+	drawtext(_T("文件输入"),&r3,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	RECT r4={WIDTH/2-45,HEIGHT/3+60,WIDTH/2+45,HEIGHT/3+90};
+	drawtext(_T("退出程序"),&r4,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+
+	setbkcolor(RGB(251,248,241));
+	settextcolor(RGB(150,126,104));//字体颜色
+	settextstyle(30,0,_T("Microsoft Yahei Ul Boid"));
+	BeginBatchDraw();
+	EndBatchDraw();
+	while(1)
+	{
+		;//批量绘图
+		judge=-1;
+		move=GetMouseMsg();
+		if(move.uMsg==WM_LBUTTONDOWN)
+		{
+			judge=Click_Choose( key, WIDTH, HEIGHT);
+			if(judge==0)
+			{
+				exit(0);//结束批量绘图
+				break;
+			}
+			else if(judge>0)
+			{
+				Choose(judge);
+				break;
+			}
+		}
+	}
+}
+
+/*初始界面函数
+功能：规定交互界面的内容以及规格，创建并展示初始交互界面 
+返回：反应函数判定的数值*/
+void show_input()
+{	
+	int judge,success=0;//判断
+	int key=2;
+	char input[100];
+	int i,j,times=0;
+	char hanzi[3];
+	char k;
+	initgraph(WIDTH,HEIGHT);//长宽
+	setbkcolor(RGB(251,248,241));//背景
+	settextcolor(RGB(150,126,104));
+	cleardevice();//清屏
+
+	settextstyle(50,0, _T("方正行黑简体"));//字体设置
+	RECT r0={50,50,WIDTH-50,HEIGHT/3};
+	drawtext(_T("请输入您需要的汉字："),&r0,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	settextstyle(30,0,_T("微软雅黑"));
+	RECT r1={WIDTH/2-45,HEIGHT-120,WIDTH/2+45,HEIGHT-150};
+	drawtext(_T("重新输入"),&r1,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+	RECT r2={WIDTH/2-45,HEIGHT-120,WIDTH/2+45,HEIGHT-90};
+	drawtext(_T("启动霓虹"),&r2,DT_CENTER|DT_VCENTER|DT_SINGLELINE);//绘制按钮
+	RECT r3={WIDTH/2-45,HEIGHT-90,WIDTH/2+45,HEIGHT-60};
+	drawtext(_T("退出程序"),&r3,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+		/*标签*/
+	settextstyle(20,0, _T("方正行黑简体"));//字体设置
+	RECT r4={90,110,WIDTH-100,HEIGHT/3+100};
+	drawtext(_T("(功能待升级，暂停使用)"),&r4,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	setbkcolor(RGB(251,248,241));
+	settextcolor(RGB(150,126,104));//字体颜色
+	settextstyle(30,0,_T("Microsoft Yahei Ul Boid"));
+	BeginBatchDraw();
+	EndBatchDraw();
+	while( 1 )
+	{
+		for (i = 0; i < times; i++)
+		{
+			input[i] = '\0';
+		}
+		if( success == 0)
+		{
+			k=getch();//扫描输入的内容
+			if( k == 0x0d )
+			{
+				success = 1;
+			}
+			input[times]=k;
+			times+=1;//记录次数
+			settextstyle(30, 0, _T("微软雅黑"));
+			outtextxy(100, HEIGHT / 3 + 10 , input );
+		}
+		if( success == 1)
+		{
+			move=GetMouseMsg();
+			if (move.uMsg == WM_LBUTTONDOWN)//判断点击按钮
+			{
+				judge = Click_Choose(key, WIDTH, HEIGHT);
+				if (judge == 1)//清空字符串
+				{
+					for (i = 0; i < times; i++)
+					{
+						input[i] = '\0';
+					}
+					clearrectangle(100, HEIGHT / 3 + 10 , WIDTH, HEIGHT-150); 
+					success = 0;//再次进入循环
+					times = 0;
+				}
+				else if (judge == 2)
+				{
+					input_key(input);
+				}
+				else if( judge ==3 )
+				{				
+					Face();
+					exit(0);
+					break;
+				}
+			}
+		}
+	}
+}
+/*输入界面：输入
+功能：当用户选择使用键盘输入汉字时，规定汉字输入界面的内容以及规格，并将界面展示给用户；在用户完成输入后，将数据交给输入模块
+返回：用户输入的字符串*/
+void show_file()
+{
+	int judge,success=0;//判断
+	int key=2;
+	char input[100];
+	int i,j,times=0;
+	char hanzi[3];
+	char k;
+	initgraph(WIDTH,HEIGHT);//长宽
+	setbkcolor(RGB(251,248,241));//背景
+	settextcolor(RGB(150,126,104));
+	cleardevice();//清屏
+
+	settextstyle(50,0, _T("方正行黑简体"));//字体设置
+	RECT r0={50,50,WIDTH-50,HEIGHT/3};
+	drawtext(_T("请输入您需要的文件："),&r0,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+		
+
+	settextstyle(30,0,_T("微软雅黑"));
+	RECT r1={WIDTH/2-45,HEIGHT-120,WIDTH/2+45,HEIGHT-150};
+	drawtext(_T("重新输入"),&r1,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+	RECT r2={WIDTH/2-45,HEIGHT-120,WIDTH/2+45,HEIGHT-90};
+	drawtext(_T("启动霓虹"),&r2,DT_CENTER|DT_VCENTER|DT_SINGLELINE);//绘制按钮
+	RECT r3={WIDTH/2-45,HEIGHT-90,WIDTH/2+45,HEIGHT-60};
+	drawtext(_T("退出程序"),&r3,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+	/*标签*/
+	settextstyle(20,0, _T("方正行黑简体"));//字体设置
+	RECT r4={90,110,WIDTH-100,HEIGHT/3+100};
+	drawtext(_T("(输入完点回车才可以点按钮)"),&r4,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	setbkcolor(RGB(251,248,241));
+	settextcolor(RGB(150,126,104));//字体颜色
+	settextstyle(30,0,_T("Microsoft Yahei Ul Boid"));
+	BeginBatchDraw();
+	EndBatchDraw();
+	while( 1 )
+	{
+		if( success == 0)
+		{
+			k=getch();//扫描输入的内容
+			if( k == 0x0d )
+			{
+				success = 1;
+			}
+			else
+			{
+				input[times]=k;
+				times+=1;//记录次数
+				input[times]='\0';
+			}
+			settextstyle(30, 0, _T("微软雅黑"));
+			outtextxy(100, HEIGHT / 3 + 10 , input );
+		}
+		if( success == 1)
+		{
+			input[times]='\0';
+			move=GetMouseMsg();
+			if (move.uMsg == WM_LBUTTONDOWN)//判断点击按钮
+			{
+				judge = Click_Choose(key, WIDTH, HEIGHT);
+				if (judge == 1)//清空字符串
+				{
+					for (i = 0; i < times; i++)
+					{
+						input[i] = '\0';
+					}
+					clearrectangle(100, HEIGHT / 3 + 10 , WIDTH, HEIGHT-150); 
+					success = 0;//再次进入循环
+					times = 0;
+				}
+				else if (judge == 2)
+				{
+					input_data(input);
+				}
+				else if( judge ==3 )
+				{				
+					Face();
+					exit(0);
+					break;
+				}
+			}
+		}
+	}
+}
+/*输入界面：文件
+功能：当用户选择使用扫描文件获得数据时，规定文件路径获取界面的内容以及规格，并将界面展示给用户；在用户完成输入后，将数据交给输入模块
+返回：需扫描的文件的文件路径*/
+void show_output( char* strings )
+{
+	char output[100];
+	strcpy(output, strings);
+	deal_data( output , WIDTH ,HEIGHT );
+}
+/*输出界面
+参数：用户输入的汉字或扫描文件所得汉字
+功能：与画图模块交互，展示结果
+返回：无*/
