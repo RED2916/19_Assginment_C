@@ -1,0 +1,19 @@
+// C课程设计.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <graphics.h>//需要下载easy-x
+#include <Windows.h>
+#include <time.h>
+#include "Show.h" /*交互模块*/
+
+
+void main(void)
+{
+	int judge=1;/*在反应模块中判断应该执行的下一步动作*/
+	/*调用初始界面*/
+	Face();
+}
+
