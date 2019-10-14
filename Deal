@@ -1,0 +1,129 @@
+#include "stdafx.h"
+#include "Deal.h"
+#include <string.h>
+#include <stdio.h>
+#include "Draw.h"
+#include  <graphics.h>   
+#include  <fcntl.h>  
+#include  <io.h>  
+#include  <stdlib.h>  
+#include  <conio.h>  
+#define  ROW  1/*纵坐标放大倍数*/  
+#define  COL  2/*横坐标放大倍数*/  
+
+//void  outbuffer(char* string)
+//{
+//	 FILE *fp;
+//	 fp=fopen("d:\\1\\HZK16.dat", "rb");
+//	 int  x,y;  
+//	 char  *s=string;  
+//	 char  buffer[32];/*buffer用来存储一个汉字*/  
+//	 register int  m,n,i,j,k;  
+//	 unsigned  char  qh,wh;  
+//	 unsigned  long  offset;  
+//	 int  gd=DETECT,gm;  
+//	 initgraph(&gd,&gm,"  "); 	
+//	 x=20;  y=100;/*显示位置设置*/  
+//	 while(*s)  
+//	 {  
+//	 qh=*(s)-0xa0;/*汉字区位码*/  
+//	 wh=*(s+1)-0xa0;  
+//	 offset=(94*(qh-1)+(wh-1))*32L;/*计算该汉字在字库中偏移量*/  
+//	 fseek(fp,offset,SEEK_SET);  
+//	 fread(buffer,32,1,fp);/*取出汉字32字节的点阵字模存入buffer中（一个汉字）*/  
+//	 for  (i=0;i<16;i++)/*将32位字节的点阵按位在屏幕上打印出来(1:打印,0:不打印),显示汉字*/  
+//	 for(n=0;n<ROW;n++)  
+//	 for(j=0;j<2;j++)  
+//	 for(k=0;k<8;k++)  
+//	 for(m=0;m<COL;m++)  
+//	 if  (((buffer[i*2+j]>>(7-k))&0x1)!=NULL)  
+//	 putpixel(x+8*j*COL+k*COL+m,y+i*ROW+n,GREEN);  
+//	 s+=2;/*因为一个汉字内码占用两个字节,所以s必须加2*/  
+//	 x+=30;  
+//	 }  
+//	 getch();  
+//	 closegraph();  
+//
+//}
+void deal_data( char* string , int WIDGHT, int HEIGHT )
+{
+	//outbuffer(string);
+/*	FILE *fp;
+	int i , j , k , l ,length , input;
+	long offset;
+	int flag;
+    unsigned char buffer[32];
+    char word[4];
+    unsigned char key[8] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01};
+	int picture[100][16][2][8];
+	length=strlen( string )/2;
+	word[3]='\0'*/;
+	
+	 FILE *fp;
+	 fp=fopen("d:\\1\\HZK16.dat", "rb");
+	 int  x,y;  
+	 char  *s=string;  
+	 char  buffer[32];/*buffer用来存储一个汉字*/  
+	 register int  m,n,i,j,k;  
+	 unsigned  char  qh,wh;  
+	 unsigned  long  offset;  
+	 int  gd=DETECT,gm;  
+
+	 
+
+	 int flag;
+	 unsigned char key[8] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01};
+	 int input,length,l;
+	 l=1;
+	 int picture[100][16][2][8];
+	 length=strlen( string )/2;
+
+	 initgraph(&gd,&gm,"  "); 	
+	 x=20;  y=100;/*显示位置设置*/  
+	 l=0;
+	 while(*s)  
+	 {  
+		 qh=*(s)-0xa0;/*汉字区位码*/  
+		 wh=*(s+1)-0xa0;  
+		 offset=(94*(qh-1)+(wh-1))*32L;/*计算该汉字在字库中偏移量*/  
+		 fseek(fp,offset,SEEK_SET);  
+		 fread(buffer,32,1,fp);/*取出汉字32字节的点阵字模存入buffer中（一个汉字）*/  
+		 for(k=0;k<16;k++)/*将32位字节的点阵按位在屏幕上打印出来(1:打印,0:不打印),显示汉字*/  
+		 for(j=0;j<2;j++)  
+		 for(i=0;i<8;i++) 	
+			  if  (((buffer[k*2+j]>>(7-i))&0x1)!=NULL)  
+			 			 picture[l][k][j][i]=1;
+			  else
+				  picture[l][k][j][i]=0;
+		 s+=2;/*因为一个汉字内码占用两个字节,所以s必须加2*/  		 
+		 l++;
+	 }
+	
+
+	//for(l=0;l<length;l++)
+	//{
+	//	word[0]=*( string+l*2 );
+	//	word[1]=*( string+1+l*2 );
+	//	//offset = ((94*(unsigned int)(word[0]-0xa0-1)+(word[1]-0xa0-1)))*32;
+	//	offset = ((94*(unsigned int)(word[0]-0xa0-1)+(word[1]-0xa0-1)))*32;
+	//	fseek(fp, offset, SEEK_SET);
+	//	for(k=0; k<16; k++)
+	//	{
+	//	    for(j=0; j<2; j++)
+	//		{
+	//	     for(i=0; i<8; i++)
+	//		 {
+	//		    flag = buffer[k*2+j]&key[i];
+	//			input=flag?1:0;
+	//			picture[l][k][j][i]=input;
+	//		 }
+	//		}  
+	//	}
+	//}
+	fclose(fp);
+	output( picture , length , WIDGHT , HEIGHT );
+}
+/*数据处理函数
+参数：从输入模块获取的汉字
+功能：利用汉字点阵库处理获取的字符串，调用画图模块画图并输出于输出界面
+返回：无*/
