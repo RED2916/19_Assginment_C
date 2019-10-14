@@ -1,0 +1,91 @@
+#include "stdafx.h"
+#include "Draw.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <graphics.h>
+#include "Choose.h"
+#include "Show.h"
+#include <Windows.h>
+
+MOUSEMSG m;
+
+int choose_colour()
+{
+	int key=1;/*页面代码*/
+	int output;
+	srand((unsigned)time(NULL));
+	output=rand()%17;
+	return output;
+}
+/*选择颜色函数
+功能：储存颜色代码，并产生随机数，随机选择颜色
+返回：颜色代码*/
+void output( int picture[][16][2][8] , int string_length , int WIDTH , int HEIGHT )
+{
+	int judge;
+	int key=1;
+	int colour,i,j,k,h;
+	int space,space_point, pick_colour;
+	int colour_group[16]={ 0, 0xAA0000, 0x00AA00, 0xAAAA00, 0x0000AA , 0xAA00AA, 0x0055AA, 0xAAAAAA, 0x555555,0xFF5555,0x55FF55, 0xFFFF55, 0x5555FF, 0xFF55FF, 0x55FFFF, 0xFFFFFF };
+
+	space=500/string_length;//字的大小
+	space_point=space/16;//点间距
+	initgraph(WIDTH,HEIGHT);//长宽
+	setbkcolor(RGB(0,0,0));//背景
+	settextcolor(RGB(150,126,104));
+	cleardevice();//清屏
+	settextstyle(30,0,_T("微软雅黑"));
+	RECT r1={WIDTH/2-45,HEIGHT-60,WIDTH/2+45,HEIGHT-30};
+	drawtext(_T("再次开始"),&r1,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+	setbkcolor(RGB(0,0,0));
+	settextcolor(RGB(150,126,104));//字体颜色
+	settextstyle(30,0,_T("Microsoft Yahei Ul Boid"));
+	BeginBatchDraw();//批量绘图
+	EndBatchDraw();//结束批量绘图
+	
+	while( 1 )
+	{
+		clearrectangle( 0 , 0, WIDTH ,HEIGHT-60);
+		for( i=0 ; i<string_length ; i++ )
+		{
+
+			for( j=0 ; j<16 ; j++ )
+			{
+				for( k=0 ; k<2 ; k++ )
+				{
+					for( h=0 ;h<8;h++ )
+					{
+						if( picture[i][j][k][h]==1 )
+						{
+							colour=choose_colour();
+							pick_colour=colour_group[colour];
+							putpixel( 100+space*i+space_point*k*8+space_point*h , HEIGHT/3+space_point*j , pick_colour );
+						}
+						else if( picture[i][j][k][h]==0 )
+						{
+							putpixel( 100+space*i+space_point*k*8+space_point*h,  HEIGHT/3+space_point*j , RGB(0,0,0 ));
+						}
+					}
+				}
+			}
+			BeginBatchDraw();//批量绘图
+			EndBatchDraw();//结束批量绘图
+		}
+
+		m=GetMouseMsg();
+		if(m.uMsg==WM_LBUTTONDOWN)
+		{
+			judge=Click_Choose( key, WIDTH, HEIGHT);
+			if(judge == 3 )
+			{
+				Face();
+				break;
+			}
+		}
+	}
+}
+/*画图函数
+参数：颜色代码，x轴、y轴坐标
+功能：根据处理后的数据和颜色代码，在输出界面中打印出相应的画面
+返回：无*/
